@@ -47,7 +47,7 @@ def save_image_grid(images, fname, epoch):
     fname_full = f"{fname}_{epoch:03d}.jpg"
 
     # normalize from [-1, 1] to [0, 1]
-    #images = (images + 1.0) / 2.0
+    images = (images + 1.0) / 2.0
 
     # use torchvision.utils.save_image to save the grid
     utils.ensure_folder_exists(fname)
