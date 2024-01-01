@@ -242,7 +242,7 @@ def train(dev, batch_size, num_epochs, learning_rate, dataset_name, num_latent_d
     num_images = 64
     fixed_latent_vectors = utils.sample_latent_vectors(num_images, G.num_latent_dims, dev)
     # save some generated images in the untrained state    
-    fname_img = f"gen_images/{dataset_name}/G_filters_{G.max_num_filters:04d}_dims_{G.num_latent_dims:04d}"
+    fname_img = f"progress_images/{dataset_name}/G_filters_{G.max_num_filters:04d}_dims_{G.num_latent_dims:04d}"
 
     # Let the generator create "batch_size" fake images from our fixed latent vectors
     fake_img = G(fixed_latent_vectors)
@@ -277,7 +277,7 @@ def train(dev, batch_size, num_epochs, learning_rate, dataset_name, num_latent_d
 
         # Save progress images
         num_images = 64
-        fname_img = f"gen_images/{dataset_name}/G_filters_{G.max_num_filters:04d}_dims_{G.num_latent_dims:04d}"
+        fname_img = f"progress_images/{dataset_name}/G_filters_{G.max_num_filters:04d}_dims_{G.num_latent_dims:04d}"
         
         # Generate images from the fixed latent vectors
         fake_img = G(fixed_latent_vectors)        
