@@ -29,20 +29,30 @@ def get_loaders(dataset_name, img_size, batch_size, root="./data"):
 
 def torchvision_load(dataset_name, batch_size, load_fn, img_size=(28, 28), root="./data"):
 
-    transform = transforms.Compose([
+    transform_gray = transforms.Compose([
          #transforms.Resize(img_size),         # resize the image to img_size pixels        
          transforms.ToTensor(),                # convert to tensor. This will also normalize pixels to 0-1
          transforms.Normalize((0.5,), (0.5,))  # normalize to -1 to 1 range         
      ])
+    
+    transform_rgb = transforms.Compose([
+         #transforms.Resize(img_size),         # resize the image to img_size pixels        
+         transforms.ToTensor(),                # convert to tensor. This will also normalize pixels to 0-1
+         transforms.Normalize((0.5,0.5,0.5), (0.5,0.5,0.5))  # normalize to -1 to 1 range         
+     ])
 
     # load train and test sets using torchvision
     if dataset_name == "celeb-a":
-        tr   = load_fn(root=root, split="train", download=True, transform=transform)
-        test = load_fn(root=root, split="test",  download=True, transform=transform)
+        tr   = load_fn(root=root, split="train", download=True, transform=transform_rgb)
+        test = load_fn(root=root, split="test",  download=True, transform=transform_rgb)
         classes_list = None # could use "identity" attribute of the dataset
-    elif dataset_name in ["cifar-100", "cifar-10", "mnist"]:
-        tr   = load_fn(root=root, train=True,   download=True, transform=transform)
-        test = load_fn(root=root, train=False,  download=True, transform=transform)
+    elif dataset_name in ["cifar-100", "cifar-10"]:
+        tr   = load_fn(root=root, train=True,   download=True, transform=transform_rgb)
+        test = load_fn(root=root, train=False,  download=True, transform=transform_rgb)
+        classes_list = tr.classes
+    elif dataset_name == "mnist":
+        tr   = load_fn(root=root, train=True,   download=True, transform=transform_gray)
+        test = load_fn(root=root, train=False,  download=True, transform=transform_gray)
         classes_list = tr.classes
     else:
         raise ValueError(f"Unknown dataset {dataset_name}")
