@@ -187,9 +187,9 @@ The generator in a DCGAN is pivotal for creating new images. It begins with a ra
 When generating an image, the generator's role is to map this latent vector to an image that mirrors the distribution of real images it's been trained on. This process involves the transformation of the input vector's distribution into something that resembles the data distribution of real images, that is however not explicity estimated. It is just sampled from with the help of the generator.  
 
 #### Steps for Image Generation
-- Latent Vector Creation: Start with a random latent vector sampled from a normal distribution. The size of this vector is defined by the GAN's architecture.
+- Latent vector creation: Start with a random latent vector sampled from a normal distribution. The size of this vector is defined by the GAN's architecture.
 
-- Transformation by Generator: Feed the latent vector into the generator network. The generator then uses its learned parameters to transform this vector into an image.
+- Transformation the by generator: Feed the latent vector into the generator network. The generator then uses its learned parameters to transform this vector into an image.
 
 - Output: The result is a synthetic image that, ideally, looks similar to the images the network was trained on.
 
