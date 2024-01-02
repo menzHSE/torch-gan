@@ -220,7 +220,7 @@ def train_epoch(dev, epoch, G, D, train_loader, optimizer_G, optimizer_D):
                   f"D(X) {(running_D_x / batch_count):6.3f} | "
                   f"D(G(z)) {(running_D_G_z1 / batch_count):6.3f} / {(running_D_G_z2 / batch_count):6.3f} | "
                   f"Batch {batch_count:5d} | "
-                  f"TP {throughput:10.2f} im/s", end="\r")         
+                  f"TP {throughput:7.0f} im/s", end="\r")         
                         
     return running_loss_G, running_loss_D, running_D_x, running_D_G_z1, running_D_G_z2, throughput_list, batch_count
 
@@ -289,7 +289,7 @@ def train(dev, batch_size, num_epochs, learning_rate, dataset_name, num_latent_d
             f"L_G {(running_loss_G.item() / batch_count):6.3f} | "
             f"D(X) {(running_D_x / batch_count):6.3f} | "
             f"D(G(z)) {(running_D_G_z1 / batch_count):6.3f} / {(running_D_G_z2 / batch_count):6.3f} | "
-            f"TP {samples_per_sec.item():10.2f} im/s | ",
+            f"TP {samples_per_sec.item():7.0f} im/s | ",
             f"Time {toc - tic:8.3f} (s)"
         )    
 
