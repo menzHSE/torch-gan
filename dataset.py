@@ -27,16 +27,16 @@ def get_loaders(dataset_name, img_size, batch_size, root="./data"):
     train_loader, test_loader, classes_list = torchvision_load(dataset_name, batch_size, load_fn, img_size, root)
     return train_loader, test_loader, classes_list, num_img_channels 
 
-def torchvision_load(dataset_name, batch_size, load_fn, img_size=(28, 28), root="./data"):
+def torchvision_load(dataset_name, batch_size, load_fn, img_size=(64, 64), root="./data"):
 
     transform_gray = transforms.Compose([
-         #transforms.Resize(img_size),         # resize the image to img_size pixels        
+         transforms.Resize(img_size),          # resize the image to img_size pixels        
          transforms.ToTensor(),                # convert to tensor. This will also normalize pixels to 0-1
          transforms.Normalize((0.5,), (0.5,))  # normalize to -1 to 1 range         
      ])
     
     transform_rgb = transforms.Compose([
-         #transforms.Resize(img_size),         # resize the image to img_size pixels        
+         transforms.Resize(img_size),          # resize the image to img_size pixels        
          transforms.ToTensor(),                # convert to tensor. This will also normalize pixels to 0-1
          transforms.Normalize((0.5,0.5,0.5), (0.5,0.5,0.5))  # normalize to -1 to 1 range         
      ])

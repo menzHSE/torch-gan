@@ -206,7 +206,7 @@ def train_epoch(dev, epoch, G, D, train_loader, optimizer_G, optimizer_D):
 def train(dev, batch_size, num_epochs, learning_rate, dataset_name, num_latent_dims, max_num_filters):
 
     # Image size 
-    img_size = (28, 28)
+    img_size = (64, 64)
 
     # Get the data
     train_loader, _, _, num_img_channels = dataset.get_loaders(dataset_name, img_size, batch_size)
@@ -227,8 +227,8 @@ def train(dev, batch_size, num_epochs, learning_rate, dataset_name, num_latent_d
     optimizer_D = optim.AdamW(D.parameters(), lr=learning_rate, betas=betas)
     
     # Weights initialization as suggested in the DCGAN paper
-    #G = G.apply(init_weights)
-    #D = D.apply(init_weights)
+    G = G.apply(init_weights)
+    D = D.apply(init_weights)
 
     # We transfer the models to the device and set them to training mode
     G.to(dev)
