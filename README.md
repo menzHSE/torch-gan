@@ -1,51 +1,40 @@
-# torch-vae - Convolutional Variational Autoencoders
+# torch-gan - Convolutional Deep Generative Adversarial Networks (DCGAN)
 
-## TODO
-* Architecture inspired from https://arxiv.org/abs/1511.06434 and is fully convolutional
-Architecture guidelines for stable Deep Convolutional GANs
-• Replace any pooling layers with strided convolutions (discriminator) and fractional-strided
-convolutions (generator).
-• Use batchnorm in both the generator and the discriminator.
-• Remove fully connected hidden layers for deeper architectures.
-• Use ReLU activation in generator for all layers except for the output, which uses Tanh.
-• Use LeakyReLU activation in the discriminator for all layers.
+<img src="assets/samples_header.jpg" width="600px" />
 
-https://pytorch.org/tutorials/beginner/dcgan_faces_tutorial.html
 
 ## About
 
-Author: Markus Enzweiler, markus.enzweiler@hs-esslingen.de
+Author: [Markus Enzweiler](https://markus-enzweiler-de), markus.enzweiler@hs-esslingen.de
 
-Convolutional variational autoencoder (VAE) implementation in PyTorch. Supported datasets include MNIST, CIFAR-10/100 and CelebA. 
+Convolutional deep generative adversarial networks (DCGAN) implementation in PyTorch. Supported datasets include MNIST, CIFAR-10/100 and CelebA. 
 
 See https://github.com/menzHSE/cv-ml-lecture-notebooks for interactive Jupyter notebooks using this package with additional explanations and visualizations. 
 
-## Variational Autoencoder Implementation Overview
+## GAN Implementation Overview
 
-Good overviews of variational autoencoders are provided in [arXiv:1906.02691](https://arxiv.org/abs/1906.02691) and [arXiv:1312.6114](https://arxiv.org/abs/1312.6114).
+The architecture of the implemented DCGANs in this repository follows the influential paper ["Unsupervised Representation Learning with Deep Convolutional Generative Adversarial Networks"](https://arxiv.org/abs/1511.06434):
 
-In our implementation, the input image is not directly mapped to a single latent vector. Instead, it's transformed into a probability distribution within the latent space, from which we sample a latent vector for reconstruction. The process involves:
 
-1. **Encoding to Probability Distribution**: 
-   - The input image is linearly mapped to two vectors: 
-     - A **mean vector**.
-     - A **standard deviation vector**.
-   - These vectors define a normal distribution in the latent space.
+<img src="assets/generator_architecture.jpg" width="600px" />
+<br>
 
-2. **Auxiliary Loss for Distribution Shape**: 
-   - We ensure the latent space distribution resembles a zero-mean unit-variance Gaussian distribution (standard normal distribution).
-   - An auxiliary loss, the Kullback-Leibler (KL) divergence between the mapped distribution and the standard normal distribution, is used in addition to the standard reconstruction loss
-   - This loss guides the training to shape the latent distribution accordingly.
-   - It ensures a well-structured and generalizable latent space for generating new images.
+<sup>(Figure taken from https://arxiv.org/abs/1511.06434)</sup>
+<br>
+<br>
+Particularly, we follow the best practices and parameter settings mentioned in the paper:
 
-3. **Sampling and Decoding**: 
-   - The variational approach allows for sampling from the defined distribution in the latent space.
-   - These samples are then used by the decoder to generate new images.
 
-4. **Reparametrization Trick**:
-   - This trick enables backpropagation through random sampling, a crucial step in VAEs. Normally, backpropagating through a random sampling process from a distribution with mean ```mu``` and standard deviation ```sigma``` is challenging due to its nondeterministic nature.
-   - The solution involves initially sampling random values from a standard normal distribution (mean 0, standard deviation 1). These values are then linearly transformed by multiplying with ```sigma``` and adding ```mu```. This process essentially samples from our target distribution with mean ```mu``` and standard deviation ```sigma```.
-   - The key benefit of this approach is that the randomness (initial standard normal sampling) is separated from the learnable parameters (```mu``` and ```sigma```). ```Mu``` and ```sigma``` are deterministic and differentiable, allowing gradients with respect to them to be calculated during backpropagation. This enables the model to effectively learn from the data.
+- **Fully Convolutional Architecture:** Adapts a convolutional approach throughout the model for both the generator and discriminator, enhancing feature extraction capabilities.
+- **Architecture Guidelines for Stability:** Incorporates best practices for stable training of deep convolutional GANs, such as:
+  - Replacing pooling layers with strided convolutions in the discriminator and transposed convolutions in the generator.
+  - Utilizing batch normalization in both the generator and discriminator to improve training dynamics.
+  - Omitting fully connected hidden layers in deeper architectures to streamline the network.
+  - Employing ReLU activation in the generator for all layers except the output, which uses a Tanh function.
+  - Integrating LeakyReLU activation in the discriminator for all layers, enhancing gradient flow.
+  - Custom weight initialization and Adam optimizer with adapted parameters, as given in the DCGAN paper.  
+
+For another guide on creating a DCGAN with PyTorch, including additional insights and practical tips, also check out the [PyTorch DCGAN tutorial](https://pytorch.org/tutorials/beginner/dcgan_faces_tutorial.html).
 
 
 ## Requirements
@@ -69,13 +58,16 @@ If you are getting a download error due to exceeded quota, please download Celeb
 
 ### Model Training
 
-Pretrained models for all datasets are available in the ```models``` directory. The models carry information of the maximum number of filters in the conv layers (```--max_filters```) and the number of latent dimensions (```--latent_dims```) in their filename. These models use three conv layers with 32/64/128 features (and corresponding transposed conv layers in the decoder) and 64 latent dimensions. To train a VAE model use ```python train.py```. 
+Pretrained models for all datasets are available in the ```pretrained``` directory. The models carry information of the maximum number of filters in the conv layers (```--max_filters```) and the number of latent dimensions (```--latent_dims```) in their filename. These models use a maximum of 512 channels in the (transposed) convolution layers and 100 latent dimensions as input to the Generator (taken from the DCGAN paper). To train a GAN model consisting of discriminator and generator use ```python train.py```. 
 
 ```
-python train.py  -h
-usage: Train a VAE with PyTorch. [-h] [--cpu] [--seed SEED] [--batchsize BATCHSIZE] [--max_filters MAX_FILTERS]
-                                 [--epochs EPOCHS] [--lr LR] [--dataset {mnist,cifar-10,cifar-100,celeb-a}] --latent_dims
-                                 LATENT_DIMS
+$ python train.py -h
+usage: Train a convolutional GAN with PyTorch. [-h] [--cpu] [--seed SEED]
+                                               [--batchsize BATCHSIZE]
+                                               [--max_filters MAX_FILTERS]
+                                               [--epochs EPOCHS] [--lr LR]
+                                               [--dataset {mnist,cifar-10,cifar-100,celeb-a}]
+                                               [--latent_dims LATENT_DIMS]
 
 optional arguments:
   -h, --help            show this help message and exit
@@ -88,63 +80,129 @@ optional arguments:
   --epochs EPOCHS       Number of training epochs
   --lr LR               Learning rate
   --dataset {mnist,cifar-10,cifar-100,celeb-a}
-                        Select the dataset to use (mnist, cifar-10, cifar-100, celeb-a)
+                        Select the dataset to use (mnist, cifar-10,
+                        cifar-100, celeb-a)
   --latent_dims LATENT_DIMS
                         Number of latent dimensions (positive integer)
 ```
 **Example**
 
-```python train.py --batchsize=128 --epochs=100 --dataset=celeb-a --latent_dims=64```
+The status output during training shows the losses for the generator and the discriminator, the averaged output values of the discriminator for real images ($D(x)$) and for fake images ($D(G(z))$), both before and after an optimization step. 
 
-### Reconstruction of Training / Test Data
+```
+$ python train.py --dataset=mnist
+Using device: cuda
+NVIDIA H100 PCIe
+Options:
+  Device: GPU
+  Seed: 0
+  Batch size: 128
+  Max number of filters: 512
+  Number of epochs: 30
+  Learning rate: 0.0002
+  Dataset: mnist
+  Number of latent dimensions: 100
+==========================================================================================
+Layer (type (var_name))                  Output Shape              Param #
+==========================================================================================
+Generator (Generator)                    [1, 1, 64, 64]            --
+├─ConvTranspose2d (conv1)                [1, 512, 4, 4]            819,200
+├─BatchNorm2d (bn1)                      [1, 512, 4, 4]            1,024
+├─ConvTranspose2d (conv2)                [1, 256, 8, 8]            1,179,648
+├─BatchNorm2d (bn2)                      [1, 256, 8, 8]            512
+├─ConvTranspose2d (conv3)                [1, 128, 16, 16]          294,912
+├─BatchNorm2d (bn3)                      [1, 128, 16, 16]          256
+├─ConvTranspose2d (conv4)                [1, 64, 32, 32]           73,728
+├─BatchNorm2d (bn4)                      [1, 64, 32, 32]           128
+├─ConvTranspose2d (conv5)                [1, 1, 64, 64]            576
+==========================================================================================
+Total params: 2,369,984
+Trainable params: 2,369,984
+Non-trainable params: 0
+Total mult-adds (Units.MEGABYTES): 241.96
+==========================================================================================
+Input size (MB): 0.00
+Forward/backward pass size (MB): 2.00
+Params size (MB): 9.48
+Estimated Total Size (MB): 11.48
+==========================================================================================
 
-Datasets can be reconstructed using ```python reconstruct.py```. Images depicting original and reconstructed data samples are written to the folder specified by ```--outdir```.
+==========================================================================================
+Layer (type (var_name))                  Output Shape              Param #
+==========================================================================================
+Discriminator (Discriminator)            [1, 1]                    --
+├─Conv2d (conv1)                         [1, 64, 32, 32]           576
+├─BatchNorm2d (bn1)                      [1, 64, 32, 32]           128
+├─Conv2d (conv2)                         [1, 128, 16, 16]          73,728
+├─BatchNorm2d (bn2)                      [1, 128, 16, 16]          256
+├─Conv2d (conv3)                         [1, 256, 8, 8]            294,912
+├─BatchNorm2d (bn3)                      [1, 256, 8, 8]            512
+├─Conv2d (conv4)                         [1, 512, 4, 4]            1,179,648
+├─BatchNorm2d (bn4)                      [1, 512, 4, 4]            1,024
+├─Conv2d (conv5)                         [1, 1, 1, 1]              8,192
+==========================================================================================
+Total params: 1,558,976
+Trainable params: 1,558,976
+Non-trainable params: 0
+Total mult-adds (Units.MEGABYTES): 57.22
+==========================================================================================
+Input size (MB): 0.02
+Forward/backward pass size (MB): 1.97
+Params size (MB): 6.24
+Estimated Total Size (MB): 8.22
+==========================================================================================
 
-``` 
-python reconstruct.py  -h
-usage: Reconstruct data samples using a VAE with PyTorch. [-h] [--cpu] --model MODEL [--rec_testdata] [--dataset {mnist,cifar-10,cifar-100,celeb-a}]
-                                                          --latent_dims LATENT_DIMS [--max_filters MAX_FILTERS] --outdir OUTDIR
-
-optional arguments:
-  -h, --help            show this help message and exit
-  --cpu                 Use CPU instead of GPU (cuda/mps) acceleration
-  --model MODEL         Model filename *.pth
-  --rec_testdata        Reconstruct test split instead of training split
-  --dataset {mnist,cifar-10,cifar-100,celeb-a}
-                        Select the dataset to use (mnist, cifar-10, cifar-100, celeb-a)
-  --latent_dims LATENT_DIMS
-                        Number of latent dimensions (positive integer)
-  --max_filters MAX_FILTERS
-                        Maximum number of filters in the convolutional layers
-  --outdir OUTDIR       Output directory for the generated samples
+Ep    0: L_D  0.281 | L_G  2.112 | D(X)  0.929 | D(G(z))  0.126 /  0.120 | TP   13934 im/s |  Time   20.793 (s)
+Ep    1: L_D  0.432 | L_G  1.743 | D(X)  0.787 | D(G(z))  0.271 /  0.209 | TP   14094 im/s |  Time    8.121 (s)
+Ep    2: L_D  0.566 | L_G  1.153 | D(X)  0.641 | D(G(z))  0.411 /  0.349 | TP   13998 im/s |  Time    8.182 (s)
+...
+...
+...
+Ep   27: L_D  0.346 | L_G  2.044 | D(X)  0.867 | D(G(z))  0.185 /  0.159 | TP   14173 im/s |  Time    8.829 (s)
+Ep   28: L_D  0.345 | L_G  2.042 | D(X)  0.870 | D(G(z))  0.182 /  0.161 | TP   14164 im/s |  Time    8.770 (s)
+Ep   29: L_D  0.325 | L_G  2.118 | D(X)  0.890 | D(G(z))  0.163 /  0.144 | TP   14132 im/s |  Time    8.775 (s)
 ```
 
+### Progress of the Generator during Training 
 
-#### Examples
+#### MNIST
 
-**Reconstructing MNIST**
-
-```python reconstruct.py --model=models/mnist/vae_filters_0128_dims_0064.pth  --dataset=mnist  --latent_dims=64 --outdir=reconstructions/mnist```
-
-![MNIST Reconstructions](docs/images/rec_mnist.jpg)
+![MNIST Progress](assets/mnist.gif)
 
 
-**Reconstructing CelebA**
+#### CIFAR-10
 
-```python reconstruct.py --model=models/celeb-a/vae_filters_0128_dims_0064.pth  --dataset=celeb-a --latent_dims=64 --outdir=reconstructions/celeb-a```
-
-![CelebA Reconstructions](docs/images/rec_celeb-a.jpg)
+![CIFAR-10 Progress](assets/cifar-10.gif)
 
 
-### Generating Samples from the Model
+#### CelebA
 
-The variational autoencoders are trained in a way that the distribution in latent space resembles a normal distribution (see above). To generate samples from the variational autoencoder, we can sample a random normally distributed latent vector and have the decoder generate an image from that. Use ```python generate.py``` to generate random samples. 
+![CelebA Progress](assets/celeb-a.gif)
+
+
+### Generating Samples from the Generator
+
+The generator in a DCGAN is pivotal for creating new images. It begins with a random latent vector, typically following a normal distribution, as its input. This vector, representing a random point in latent space, is what the generator uses to produce an image.
+
+When generating an image, the generator's role is to map this latent vector to an image that mirrors the distribution of real images it's been trained on. This process involves the transformation of the input vector's distribution into something that resembles the data distribution of real images, that is however not explicity estimated. It is just sampled from with the help of the generator.  
+
+#### Steps for Image Generation
+- Latent Vector Creation: Start with a random latent vector sampled from a normal distribution. The size of this vector is defined by the GAN's architecture.
+
+- Transformation by Generator: Feed the latent vector into the generator network. The generator then uses its learned parameters to transform this vector into an image.
+
+- Output: The result is a synthetic image that, ideally, looks similar to the images the network was trained on.
+
+
+
+Use ```python generate.py``` to generate random samples. 
 
 
 ``` 
-python generate.py -h
-usage: Generate samples from a VAE with PyTorch. [-h] [--cpu] [--seed SEED] --model MODEL --latent_dims LATENT_DIMS [--max_filters MAX_FILTERS]
-                                                 [--nsamples NSAMPLES] --outdir OUTDIR [--nimg_channels NIMG_CHANNELS]
+$ python generate.py -h
+usage: Generate samples from a GAN Generator with PyTorch. [-h] [--cpu] [--seed SEED] --model MODEL --latent_dims
+                                                           LATENT_DIMS --max_filters MAX_FILTERS [--nsamples NSAMPLES]
+                                                           --outdir OUTDIR [--nimg_channels NIMG_CHANNELS]
 
 optional arguments:
   -h, --help            show this help message and exit
@@ -163,16 +221,24 @@ optional arguments:
 
 #### Examples
 
-**Sample from the VAE models trained on MNIST**
+**Sample from the generator model trained on MNIST**
 
-```python generate.py  --model=models/mnist/vae_filters_0128_dims_0064.pth  --latent_dims=64 --outdir=./samples/mnist --nimg_channels=1 --nsamples=64``` 
+```python generate.py  --model=pretrained/mnist/G_filters_0512_dims_0100.pth --latent_dims=100 --max_filters=512 --nimg_channels=1 --outdir=samples/mnist --nsamples=32``` 
 
-![MNIST Samples](docs/images/samples_mnist.jpg)
+![MNIST Samples](assets/samples_mnist.png)
 
 
-**Sample from the VAE models trained on CelebA**
+**Sample from the generator model trained on CIFAR-10**
 
-```python generate.py  --model=models/celeb-a/vae_filters_0128_dims_0064.pth  --latent_dims=64 --outdir=./samples/celeb-a/ --nimg_channels=3 --nsamples=64```
+```python generate.py  --model=pretrained/cifar-10/G_filters_0512_dims_0100.pth --latent_dims=100 --max_filters=512 --nimg_channels=3 --outdir=samples/cifar-10  --nsamples=32```
 
-![CelebA Samples](docs/images/samples_celeb-a.jpg)
+![CelebA Samples](assets/samples_cifar-10.png)
+
+**Sample from the generator model trained on CelebA**
+
+```python generate.py  --model=pretrained/celeb-a/G_filters_0512_dims_0100.pth --latent_dims=100 --max_filters=512 --nimg_channels=3 --outdir=samples/celeb-a --nsamples=32```
+
+![CelebA Samples](assets/samples_celeb-a.png)
+
+
 
