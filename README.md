@@ -9,6 +9,9 @@ convolutions (generator).
 • Remove fully connected hidden layers for deeper architectures.
 • Use ReLU activation in generator for all layers except for the output, which uses Tanh.
 • Use LeakyReLU activation in the discriminator for all layers.
+
+https://pytorch.org/tutorials/beginner/dcgan_faces_tutorial.html
+
 ## About
 
 Author: Markus Enzweiler, markus.enzweiler@hs-esslingen.de

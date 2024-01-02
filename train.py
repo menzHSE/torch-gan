@@ -5,6 +5,8 @@
 # Learning with Deep Convolutional Generative Adversarial Networks", 
 # https://arxiv.org/pdf/1511.06434.pdf). 
 
+# See also: https://pytorch.org/tutorials/beginner/dcgan_faces_tutorial.html
+
 import argparse
 import time
 import numpy as np
@@ -45,7 +47,7 @@ def save_model(model, fname, epoch):
 # Save a grid of images
 def save_image_grid(images, fname, epoch):
     fname_full = f"{fname}_{epoch:03d}.jpg"
-
+   
     # normalize from [-1, 1] to [0, 1]
     images = (images + 1.0) / 2.0
 
@@ -92,7 +94,7 @@ def train_step_D(G, D, optimizer_D, images):
     batch_size = images.shape[0]
 
     # Check gradients
-    check_grads(D, "Discriminator")
+    #check_grads(D, "Discriminator")
 
     # Reset gradients in the optimizer
     optimizer_D.zero_grad()
@@ -128,7 +130,8 @@ def train_step_D(G, D, optimizer_D, images):
     loss_avg.backward()
     optimizer_D.step()
 
-    return loss_avg
+    # return loss, D(x) and D(G(z)) before D is updated
+    return loss_avg, torch.mean(real_img_output), torch.mean(fake_img_output)
 
 # Train the generator for one step
 def train_step_G(G, D, optimizer_G, images):
@@ -136,7 +139,7 @@ def train_step_G(G, D, optimizer_G, images):
     batch_size = images.shape[0]
 
     # Check gradients
-    check_grads(G, "Generator")
+    # check_grads(G, "Generator")
 
     # Reset gradients in the optimizer  
     optimizer_G.zero_grad()
@@ -159,7 +162,9 @@ def train_step_G(G, D, optimizer_G, images):
     # Gradients and optimizer step
     loss_g.backward()
     optimizer_G.step()
-    return loss_g
+
+    # return loss and D(G(z)) after D is updated
+    return loss_g, torch.mean(fake_img_output)
 
 # Train one epoch
 def train_epoch(dev, epoch, G, D, train_loader, optimizer_G, optimizer_D):
@@ -167,6 +172,16 @@ def train_epoch(dev, epoch, G, D, train_loader, optimizer_G, optimizer_D):
      # We keep track of the losses
     running_loss_G = 0.0
     running_loss_D = 0.0
+
+    # D(x): average outputs of the discriminator for the real 
+    # images before D is updated. 
+    
+    # D(G(z)): average outputs of the discriminator for the fake
+    # images before and after D is updated. 
+
+    running_D_x    = 0.0
+    running_D_G_z1 = 0.0
+    running_D_G_z2 = 0.0
     throughput_list = []
 
     # For each batch, we alternate between training the discriminator and the generator.
@@ -182,25 +197,32 @@ def train_epoch(dev, epoch, G, D, train_loader, optimizer_G, optimizer_D):
         images = images.to(dev)
                     
         # Train discriminator
-        loss_D = train_step_D(G, D, optimizer_D, images)
+        loss_D, D_x, D_G_z1 = train_step_D(G, D, optimizer_D, images)
         # Train generator
-        loss_G = train_step_G(G, D, optimizer_G, images)
+        loss_G, D_G_z2 = train_step_G(G, D, optimizer_G, images)
         
         # Keep track of stats
         throughput_toc = time.perf_counter()
         throughput = batch_size / (throughput_toc - throughput_tic)
         throughput_list.append(throughput)
+
         running_loss_D += loss_D
         running_loss_G += loss_G
 
+        running_D_x += D_x
+        running_D_G_z1 += D_G_z1
+        running_D_G_z2 += D_G_z2 
+
         if batch_count > 0 and (batch_count % 10 == 0):
-            print(f"Epoch {epoch:4d}: "
-                  f"Loss_D {(running_loss_D / batch_count):6.5f} | "
-                  f"Loss_G {(running_loss_G / batch_count):6.5f} | "
+            print(f"Ep {epoch:4d}: "
+                  f"L_D {(running_loss_D / batch_count):6.3f} | "
+                  f"L_G {(running_loss_G / batch_count):6.3f} | "
+                  f"D(X) {(running_D_x / batch_count):6.3f} | "
+                  f"D(G(z)) {(running_D_G_z1 / batch_count):6.3f} / {(running_D_G_z2 / batch_count):6.3f} | "
                   f"Batch {batch_count:5d} | "
-                  f"Throughput {throughput:10.2f} images/second", end="\r")         
+                  f"TP {throughput:10.2f} im/s", end="\r")         
                         
-    return running_loss_G, running_loss_D, throughput_list, batch_count
+    return running_loss_G, running_loss_D, running_D_x, running_D_G_z1, running_D_G_z2, throughput_list, batch_count
 
 # Train the Generator and the Discriminator
 def train(dev, batch_size, num_epochs, learning_rate, dataset_name, num_latent_dims, max_num_filters):
@@ -255,17 +277,19 @@ def train(dev, batch_size, num_epochs, learning_rate, dataset_name, num_latent_d
 
         # train one epoch
         tic = time.perf_counter()
-        running_loss_G, running_loss_D, throughput_list, batch_count = train_epoch(
+        running_loss_G, running_loss_D, running_D_x, running_D_G_z1, running_D_G_z2, throughput_list, batch_count = train_epoch(
             dev, epoch, G, D, train_loader, optimizer_G, optimizer_D)
         toc = time.perf_counter()
        
         # print epoch stats   
         samples_per_sec = torch.mean(torch.tensor(throughput_list))              
         print(
-            f"Epoch {epoch:4d}: "
-            f"Loss_D {(running_loss_D.item() / batch_count):6.5f} | "
-            f"Loss_G {(running_loss_G.item() / batch_count):6.5f} | "
-            f"Throughput {samples_per_sec.item():10.2f} images/second | ",
+            f"Ep {epoch:4d}: "
+            f"L_D {(running_loss_D.item() / batch_count):6.3f} | "
+            f"L_G {(running_loss_G.item() / batch_count):6.3f} | "
+            f"D(X) {(running_D_x / batch_count):6.3f} | "
+            f"D(G(z)) {(running_D_G_z1 / batch_count):6.3f} / {(running_D_G_z2 / batch_count):6.3f} | "
+            f"TP {samples_per_sec.item():10.2f} im/s | ",
             f"Time {toc - tic:8.3f} (s)"
         )    
 
@@ -285,7 +309,7 @@ def train(dev, batch_size, num_epochs, learning_rate, dataset_name, num_latent_d
               
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser("Train a VAE with PyTorch.")
+    parser = argparse.ArgumentParser("Train a convolutional GAN with PyTorch.")
 
     parser.add_argument("--cpu", action="store_true", help="Use CPU instead of GPU (cuda/mps) acceleration")
     parser.add_argument("--seed", type=int, default=0, help="Random seed")
