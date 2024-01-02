@@ -90,8 +90,9 @@ The status output during training shows the losses for the discriminator and the
 
 - **Discriminator Loss**: Measures the discriminator's ability to distinguish between real and generated images. Lower values indicate higher accuracy.
 - **Generator Loss**: Reflects the generator's effectiveness in creating images that the discriminator mistakes as real. A lower value signifies better performance.
-- **$D(x)$**: The average score given by the discriminator to real images. Closer to 1 is ideal, showing high recognition of real/fake images.
-- **$D(G(z))$**: The average score for generated (fake) images. Initially low, but an increase over time suggests the generator is improving.
+- **$D(x)$**: The average score given by the discriminator to real images. Ideally, this should be very high at the beginning of training, indicating accurate recognition of real images. However, it should not remain at a very high level, as this would suggest that the generator is not providing a sufficient challenge.
+- **$D(G(z))$**: The average score for generated (fake) images. Initially, this may be low, but an increase over time is desirable. This indicates that the generator is improving and creating more realistic images that are increasingly able to fool the discriminator.
+
 
 Balancing these values is key in GAN training. The overall process is very sensitive to different model architectures, hyperparameters, etc. The goal is for the generator to progressively get better at creating realistic images, while the discriminator maintains a robust ability to tell real from fake.
 
