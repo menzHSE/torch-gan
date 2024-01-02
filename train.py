@@ -219,8 +219,8 @@ def train_epoch(dev, epoch, G, D, train_loader, optimizer_G, optimizer_D):
                   f"L_G {(running_loss_G / batch_count):6.3f} | "
                   f"D(X) {(running_D_x / batch_count):6.3f} | "
                   f"D(G(z)) {(running_D_G_z1 / batch_count):6.3f} / {(running_D_G_z2 / batch_count):6.3f} | "
-                  f"Batch {batch_count:5d} | "
-                  f"TP {throughput:7.0f} im/s", end="\r")         
+                  f"TP {throughput:7.0f} im/s | ",  
+                  f"Batch {batch_count:5d}", end="\r")  
                         
     return running_loss_G, running_loss_D, running_D_x, running_D_G_z1, running_D_G_z2, throughput_list, batch_count
 
