@@ -7,7 +7,7 @@
 
 Author: [Markus Enzweiler](https://markus-enzweiler-de), markus.enzweiler@hs-esslingen.de
 
-Convolutional deep generative adversarial networks (DCGAN) implementation in PyTorch. Supported datasets include MNIST, CIFAR-10/100 and CelebA. 
+Convolutional deep generative adversarial networks (DCGAN) implementation in PyTorch. Supported datasets include MNIST, Fashion-MNIST, CIFAR-10/100 and CelebA. 
 
 See https://github.com/menzHSE/cv-ml-lecture-notebooks for interactive Jupyter notebooks using this package with additional explanations and visualizations. 
 
@@ -79,8 +79,8 @@ optional arguments:
                         Maximum number of filters in the convolutional layers
   --epochs EPOCHS       Number of training epochs
   --lr LR               Learning rate
-  --dataset {mnist,cifar-10,cifar-100,celeb-a}
-                        Select the dataset to use (mnist, cifar-10,
+  --dataset {mnist,fashion-mnist,cifar-10,cifar-100,celeb-a}
+                        Select the dataset to use (mnist, fashion-mnist, cifar-10,
                         cifar-100, celeb-a)
   --latent_dims LATENT_DIMS
                         Number of latent dimensions (positive integer)
@@ -176,6 +176,10 @@ Ep   29: L_D  0.325 | L_G  2.118 | D(X)  0.890 | D(G(z))  0.163 /  0.144 | TP   
 
 ![MNIST Progress](assets/mnist.gif)
 
+#### Fashion MNIST
+
+![Fashion MNIST Progress](assets/fashion-mnist.gif)
+
 
 #### CIFAR-10
 
@@ -234,6 +238,11 @@ optional arguments:
 
 ![MNIST Samples](assets/samples_mnist.png)
 
+**Sample from the generator model trained on Fashion-MNIST**
+
+```python generate.py  --model=pretrained/fashion-mnist/G_filters_0512_dims_0100.pth --latent_dims=100 --max_filters=512 --nimg_channels=1 --outdir=samples/fashion-mnist --nsamples=32``` 
+
+![Fashion MNIST Samples](assets/samples_fashion_mnist.png)
 
 **Sample from the generator model trained on CIFAR-10**
 

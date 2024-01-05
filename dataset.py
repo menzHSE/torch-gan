@@ -9,8 +9,11 @@ import utils
 def get_loaders(dataset_name, img_size, batch_size, root="./data"):
     load_fn = None
     num_img_channels = 0
-    if dataset_name == "mnist":
+    if dataset_name in "mnist":
         load_fn = torchvision.datasets.MNIST
+        num_img_channels = 1
+    elif dataset_name == "fashion-mnist":
+        load_fn = torchvision.datasets.FashionMNIST
         num_img_channels = 1
     elif dataset_name == "cifar-10":
         load_fn = torchvision.datasets.CIFAR10
@@ -50,7 +53,7 @@ def torchvision_load(dataset_name, batch_size, load_fn, img_size=(64, 64), root=
         tr   = load_fn(root=root, train=True,   download=True, transform=transform_rgb)
         test = load_fn(root=root, train=False,  download=True, transform=transform_rgb)
         classes_list = tr.classes
-    elif dataset_name == "mnist":
+    elif dataset_name in ["mnist", "fashion-mnist"]:
         tr   = load_fn(root=root, train=True,   download=True, transform=transform_gray)
         test = load_fn(root=root, train=False,  download=True, transform=transform_gray)
         classes_list = tr.classes
@@ -75,7 +78,7 @@ if __name__ == "__main__":
     batch_size = 32
     img_size = (28, 28)
 
-    tr_loader, test_loader, classes_list, num_img_channels = get_loaders("mnist", img_size=img_size, batch_size=batch_size)
+    tr_loader, test_loader, classes_list, num_img_channels = get_loaders("fashion-mnist", img_size=img_size, batch_size=batch_size)
 
     B, C, H, W = batch_size, num_img_channels, img_size[0], img_size[1]   
     print(f"Batch size: {B}, Channels: {C}, Height: {H}, Width: {W}")

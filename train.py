@@ -317,8 +317,8 @@ if __name__ == "__main__":
     parser.add_argument("--max_filters", type=int, default=512, help="Maximum number of filters in the convolutional layers")
     parser.add_argument("--epochs", type=int, default=30, help="Number of training epochs")
     parser.add_argument("--lr", type=float, default=2e-4, help="Learning rate")
-    parser.add_argument("--dataset", type=str, choices=['mnist', 'cifar-10', 'cifar-100', 'celeb-a'], default='mnist', 
-                        help="Select the dataset to use (mnist, cifar-10, cifar-100, celeb-a)")
+    parser.add_argument("--dataset", type=str, choices=['mnist', 'fashion-mnist', 'cifar-10', 'cifar-100', 'celeb-a'], default='mnist', 
+                        help="Select the dataset to use (mnist, fashion-mnist, cifar-10, cifar-100, celeb-a)")
     parser.add_argument("--latent_dims", type=int, default=100, help="Number of latent dimensions (positive integer)")
 
 
