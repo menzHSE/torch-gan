@@ -178,7 +178,7 @@ Ep   29: L_D  0.325 | L_G  2.118 | D(X)  0.890 | D(G(z))  0.163 /  0.144 | TP   
 
 #### Fashion MNIST
 
-![MNIST Progress](assets/fashion-mnist.gif)
+![Fashion MNIST Progress](assets/fashion-mnist.gif)
 
 
 #### CIFAR-10
