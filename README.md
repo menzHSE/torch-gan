@@ -7,7 +7,7 @@
 
 Author: [Markus Enzweiler](https://markus-enzweiler-de), markus.enzweiler@hs-esslingen.de
 
-Convolutional deep generative adversarial networks (DCGAN) implementation in PyTorch. Supported datasets include MNIST,Fashion-MNIST, CIFAR-10/100 and CelebA. 
+Convolutional deep generative adversarial networks (DCGAN) implementation in PyTorch. Supported datasets include MNIST, Fashion-MNIST, CIFAR-10/100 and CelebA. 
 
 See https://github.com/menzHSE/cv-ml-lecture-notebooks for interactive Jupyter notebooks using this package with additional explanations and visualizations. 
 
@@ -176,7 +176,7 @@ Ep   29: L_D  0.325 | L_G  2.118 | D(X)  0.890 | D(G(z))  0.163 /  0.144 | TP   
 
 ![MNIST Progress](assets/mnist.gif)
 
-#### MNIST
+#### Fashion MNIST
 
 ![MNIST Progress](assets/fashion-mnist.gif)
 
