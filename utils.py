@@ -1,16 +1,18 @@
 # Markus Enzweiler - markus.enzweiler@hs-esslingen.de
 
 import os
+
 import numpy as np
 import torch
 from PIL import Image
+
 
 # Sample a batch of latent vectors of given dim
 def sample_latent_vectors(batch_size, dim, dev):
     return torch.randn(batch_size, dim, 1, 1, device=dev)
 
+
 def save_image(img_data, fname):
-    
     # Reshape if the image has a channel dimension
     if img_data.ndim == 3 and img_data.shape[0] == 1:  # Grayscale image
         img_data = img_data.squeeze(0)  # remove channel dimension
@@ -25,7 +27,6 @@ def save_image(img_data, fname):
 
 
 def combine_and_save_image(img1_data, img2_data, fname):
-   
     # Reshape if the images have a channel dimension
     if img1_data.ndim == 3 and img1_data.shape[0] == 1:  # Grayscale image
         img1_data = img1_data.squeeze(0)  # remove channel dimension
@@ -44,7 +45,7 @@ def combine_and_save_image(img1_data, img2_data, fname):
     # Concatenate images horizontally
     total_width = pimg1.width + pimg2.width
     max_height = max(pimg1.height, pimg2.height)
-    combined_img = Image.new('RGB', (total_width, max_height))
+    combined_img = Image.new("RGB", (total_width, max_height))
 
     # Paste the images side by side
     combined_img.paste(pimg1, (0, 0))
@@ -52,7 +53,7 @@ def combine_and_save_image(img1_data, img2_data, fname):
 
     # Save the combined image
     combined_img.save(fname)
-    
+
 
 def ensure_folder_exists(path):
     # Extract the directory path from the (file) path
@@ -65,6 +66,3 @@ def ensure_folder_exists(path):
             os.makedirs(dir_path, exist_ok=True)
 
     return dir_path  # Optionally return the directory path
-
-
-
