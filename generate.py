@@ -70,7 +70,7 @@ def generate(
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
-        "Generate samples from a GAN Generator with PyTorch."
+        description="Generate samples from a GAN Generator with PyTorch."
     )
 
     parser.add_argument(

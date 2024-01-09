@@ -343,7 +343,9 @@ def train(
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser("Train a convolutional GAN with PyTorch.")
+    parser = argparse.ArgumentParser(
+        description="Train a convolutional GAN with PyTorch."
+    )
 
     parser.add_argument(
         "--cpu",
