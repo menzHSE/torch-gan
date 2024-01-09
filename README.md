@@ -62,14 +62,12 @@ Pretrained models for all datasets are available in the ```pretrained``` directo
 
 ```
 $ python train.py -h
-usage: Train a convolutional GAN with PyTorch. [-h] [--cpu] [--seed SEED]
-                                               [--batchsize BATCHSIZE]
-                                               [--max_filters MAX_FILTERS]
-                                               [--epochs EPOCHS] [--lr LR]
-                                               [--dataset {mnist,cifar-10,cifar-100,celeb-a}]
-                                               [--latent_dims LATENT_DIMS]
+usage: train.py [-h] [--cpu] [--seed SEED] [--batchsize BATCHSIZE] [--max_filters MAX_FILTERS] [--epochs EPOCHS]
+                [--lr LR] [--dataset {mnist,fashion-mnist,cifar-10,cifar-100,celeb-a}] [--latent_dims LATENT_DIMS]
 
-optional arguments:
+Train a convolutional GAN with PyTorch.
+
+options:
   -h, --help            show this help message and exit
   --cpu                 Use CPU instead of GPU (cuda/mps) acceleration
   --seed SEED           Random seed
@@ -80,8 +78,7 @@ optional arguments:
   --epochs EPOCHS       Number of training epochs
   --lr LR               Learning rate
   --dataset {mnist,fashion-mnist,cifar-10,cifar-100,celeb-a}
-                        Select the dataset to use (mnist, fashion-mnist, cifar-10,
-                        cifar-100, celeb-a)
+                        Select the dataset to use (mnist, fashion-mnist, cifar-10, cifar-100, celeb-a)
   --latent_dims LATENT_DIMS
                         Number of latent dimensions (positive integer)
 ```
